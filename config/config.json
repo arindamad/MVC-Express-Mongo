@@ -1,6 +1,6 @@
 {
   "development": {
-    "database_url": "mongodb://localhost:27017/transcon",
+    "database_url": "mongodb://127.0.0.1:27017/transcon",
     "secret": "qwertyuiop"
   },
   "test": {
@@ -8,7 +8,7 @@
   },
   "production": {
     "secret": "qwertyuiop",
-    "database_url": "mongodb://localhost:27017/transcon"
+    "database_url": " mongodb://127.0.0.1:27017/transcon"
   },
   "admin_creation_key":"49206c6f766520646f6373487562==",
   "days": {

@@ -10,10 +10,11 @@ const dbConn = require("./db-connection")
 const bodyParser = require('body-parser');
 const User = require('./models/user.model');
 const Brands  = require('./models/brands.model');
-// const booking = require('./models/booking.model');
+const Category = require('./models/category.model');
+
 // const report_category = require('./models/report_category.model');
 
-
+ 
 const path = require('path');
 
 
@@ -37,6 +38,10 @@ app.use('/api/admin/', adminRoutes);
 
 const brandRoutes = require('./routes/brands.routes');
 app.use('/api/brand/', brandRoutes);
+
+const categoryRoutes = require('./routes/category.routes');
+app.use('/api/category/', categoryRoutes);
+
 
 
 // Serve static files from the build folder

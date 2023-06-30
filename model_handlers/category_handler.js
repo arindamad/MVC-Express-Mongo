@@ -6,29 +6,26 @@ const s3Handler = new S3Handler();
 const config = require('../config/config.json')
 require('dotenv').config();
 const crypto = require('crypto');
-const ReportCategory = require("../models/report_category.model");
+// const Subcategory = require('./models/category.model');
+const Category = require("../models/category.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 
 const create = async (req, res,  done) => {  
-    try {        
+    try {      
         
         if(!req.name){
             done({ responseCode: responseCodes.Conflict, result: [], message: "Name is required." },null);
             return;
         }
-        if(req.parent){
-            let parent = await validateParent(req.parent);
-            if(!parent) {
-                done({ responseCode: responseCodes.Conflict, result: [], message: "Parent Category is not valid." },null);
-                return;
-            } 
+        Query.Create('Category', req, (error, result) => { 
+            if(error){
+                done({ responseCode: responseCodes.Conflict, result: [], message: "Error code:"+error },null);
+            }else{
+                done(null,{ responseCode: responseCodes.OK, result: result, message: "Category created successfully." });
+            }
             
-        } 
-
-        Query.Create('report_category', req, (error, result) => {
-            done(null,{ responseCode: responseCodes.OK, result: result, message: "Category created successfully." });
         });
     }
     catch (error) {
@@ -36,18 +33,8 @@ const create = async (req, res,  done) => {
     }
 }
 
-
-
-const validateParent = async _id => {
-    let CategoryId = await ReportCategory.findOne({ _id });
-    console.log(CategoryId)
-    return CategoryId ? true : false;
-};
-
-
-
 const list = async (req, res, done) => {
-    Query.Find('report_category',  (error, result) => {
+    Query.Find('Category',  (error, result) => {
         if (error) {
             done({ responseCode: responseCodes.Unauthorized, result: [], message: "Error" }, null);
 
@@ -60,7 +47,7 @@ const list = async (req, res, done) => {
 }
 
 const delete_user = async (req, res, done) => {
-    Query.Delete('report_category', req, (error, result) => {
+    Query.Delete('Category', req, (error, result) => {
         if (error)
             done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to delete data." }, null);
 
@@ -81,7 +68,7 @@ const update = async (req, res, done) => {
     try {
         // Find the report category by ID and update it
         const category = await ReportCategory.findByIdAndUpdate(req._id, req, { new: true });
-    
+        
         if (!category) {
           return done({ responseCode: responseCodes.ResourceNotFound, result: {}, message: 'Report category not found' }, null);
         }
@@ -95,6 +82,47 @@ const update = async (req, res, done) => {
    
 
 }
+
+const subCategoryCreate = async (req, res, done) => {
+    try {
+      if (!req.name || !req.categoryId) {
+        done({ responseCode: responseCodes.Conflict, result: [], message: "Name and categoryId are required." }, null);
+        return;
+      }
+  
+      const categoryId = req.categoryId;
+  
+      // Check if the category exists
+      const category = await Category.findById(categoryId);
+      console.log(category)
+      if (!category) {
+        done({ responseCode: responseCodes.NotFound, result: [], message: "Category not found." }, null);
+        return;
+      }  
+      const subcategory = {
+        name: req.name,
+        parent: categoryId,
+        image: req.image,
+      };
+  
+      Query.Create('Category', subcategory, (error, result) => { 
+        if(error){
+            done({ responseCode: responseCodes.Conflict, result: [], message: "Error code:"+error },null);
+            return;
+        }else{
+            done(null, { responseCode: responseCodes.OK, result: result, message: "Subcategory created successfully." });
+        }        
+      });
+  
+     
+    } catch (error) {
+      console.error('Error creating subcategory:', error);
+      done(error, null);
+    }
+  };
+
+
+
 
 
 const image_upload = async (req, res, done) => {
@@ -201,5 +229,5 @@ function getImageNameFromURL(URL) {
 
 module.exports = {
 
-    create,  delete_user, image_upload, list, update
+    create,  delete_user, image_upload, list, update, subCategoryCreate
 }
