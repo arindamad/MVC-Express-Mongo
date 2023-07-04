@@ -11,6 +11,8 @@ const bodyParser = require('body-parser');
 const User = require('./models/user.model');
 const Brands  = require('./models/brands.model');
 const Category = require('./models/category.model');
+const Product = require('./models/product.model');
+const Variant = require('./models/product.variant.model'); 
 
 // const report_category = require('./models/report_category.model');
 
@@ -41,6 +43,9 @@ app.use('/api/brand/', brandRoutes);
 
 const categoryRoutes = require('./routes/category.routes');
 app.use('/api/category/', categoryRoutes);
+
+const productRoutes = require('./routes/product.routes');
+app.use('/api/product/', productRoutes);
 
 
 

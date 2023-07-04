@@ -6,14 +6,13 @@ const s3Handler = new S3Handler();
 const config = require('../config/config.json')
 require('dotenv').config();
 const crypto = require('crypto');
-const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Slot = require("../models/slot.model");
 const mongoose = require('mongoose');
 
 
-const create = async (req, res, role, done) => {    
+const create = async (req, res, role, done) => {   
+    console.log(req.photo) 
 
     try { 
         const uniqueId = crypto.randomBytes(3).toString("hex").toLocaleUpperCase();       

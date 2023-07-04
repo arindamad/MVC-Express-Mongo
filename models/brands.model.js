@@ -7,22 +7,12 @@ let Brand_Schema = new Schema({
   brand_name: {
     type: String,
     default: '',
-    required: true,
-    ref: 'User'
+    required: true,   
   },
   brand_description: {
     type: String,
     default: ''
-  },
-  short_id: {
-    type: String,
-    default: ''
-  },
-  role:{
-    type: String,
-    default: null,
-    require: true
-  },
+  }, 
   status: {
     type: Number,
     default: 0
