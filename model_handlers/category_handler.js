@@ -13,8 +13,7 @@ const jwt = require("jsonwebtoken");
 
 
 const create = async (req, res,  done) => {  
-    try {      
-        
+    try {   
         if(!req.name){
             done({ responseCode: responseCodes.Conflict, result: [], message: "Name is required." },null);
             return;
@@ -24,8 +23,7 @@ const create = async (req, res,  done) => {
                 done({ responseCode: responseCodes.Conflict, result: [], message: "Error code:"+error },null);
             }else{
                 done(null,{ responseCode: responseCodes.OK, result: result, message: "Category created successfully." });
-            }
-            
+            }            
         });
     }
     catch (error) {
@@ -34,7 +32,9 @@ const create = async (req, res,  done) => {
 }
 
 const list = async (req, res, done) => {
-    Query.Find('Category',  (error, result) => {
+    // const cateogry = Category.find( { a : { $exists : false } } );
+    
+    Query.Find('Category', { parent : { $exists : false } }  , {},  (error, result) => {
         if (error) {
             done({ responseCode: responseCodes.Unauthorized, result: [], message: "Error" }, null);
 
@@ -46,6 +46,20 @@ const list = async (req, res, done) => {
     })
 }
 
+const SubCatlist = async (req, res, done) => {
+    // const cateogry = Category.find( { a : { $exists : false } } );
+    
+    Query.Find('Category', { parent : req.categoryId }  , {},  (error, result) => {
+        if (error) {
+            done({ responseCode: responseCodes.Unauthorized, result: [], message: "Error" }, null);
+
+        }
+        else {
+            done(null, { responseCode: responseCodes.OK, result: result, message: "Success" });
+            return
+        }
+    })
+}
 const delete_user = async (req, res, done) => {
     Query.Delete('Category', req, (error, result) => {
         if (error)
@@ -68,7 +82,6 @@ const update = async (req, res, done) => {
     try {
         // Find the report category by ID and update it
         const category = await ReportCategory.findByIdAndUpdate(req._id, req, { new: true });
-        
         if (!category) {
           return done({ responseCode: responseCodes.ResourceNotFound, result: {}, message: 'Report category not found' }, null);
         }
@@ -229,5 +242,5 @@ function getImageNameFromURL(URL) {
 
 module.exports = {
 
-    create,  delete_user, image_upload, list, update, subCategoryCreate
+    create,  delete_user, image_upload, list, update, subCategoryCreate, SubCatlist
 }

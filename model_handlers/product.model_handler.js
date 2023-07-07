@@ -11,85 +11,42 @@ const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose');
 
 
-const create = async (req, res, role, done) => {   
-    console.log(req.photo) 
-
+const create = async (req, res, done) => {   
     try { 
         const uniqueId = crypto.randomBytes(3).toString("hex").toLocaleUpperCase();       
+        if(!req.product_name){
+            done({ responseCode: responseCodes.Conflict, result: [], message: "Please enter Product Name." }, null);
+            return;
+        }
+        const obj={
+            product_id: uniqueId,
+            product_name: req.product_name,
+            sku:req.sku,
+            product_name: req.product_name,
+            short_description:req.short_description,
+            long_description:req.long_description,
+            brand:req.category,
+            brand:req.category,
+            photo:req.photo[0].path,
+            video:req.video[0].path,
+            photo_gallery:req.video.map((i)=>i.path),
 
-        if(!req.mobile){
-            done({ responseCode: responseCodes.Conflict, result: [], message: "Phone no is required." }, null);
-            return;
+
+
+
+
+            
+
         }
-        // validate the phone
-        let phoneNotRegistered = await validatePhone(req.mobile);
-        if (!phoneNotRegistered) {
-            done({ responseCode: responseCodes.Conflict, result: [], message: "Phone is already registered." }, null);
-            return;
-        }
-        if(!req.registration_no){
-            done({ responseCode: responseCodes.Conflict, result: [], message: "Registration no is not found." }, null);
-            return;
-        }
-        if(!req.doctor_specialization){
-            done({ responseCode: responseCodes.Conflict, result: [], message: "Please add Specialization." }, null);
-            return;
-        }
-        if(!req.password){
-            done({ responseCode: responseCodes.Conflict, result: [], message: "Please enter password." }, null);
-            return;
-        }
+        console.log(obj)
         
-
-         
-         // Get the hashed password
-         const password = await bcrypt.hash(req.password, 12);
-
-         let obj = {
-            ...req,
-            role:config.role.doctor.title,
-            uid:uniqueId,
-            password
-         }
-
-        Query.Create('User', obj, (error, result) => {
+        Query.Create('Product', obj, (error, result) => {
             
             if (error) {
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create your account." }, null);
             }
-            else {
-                let token = jwt.sign(
-                    {
-                      user_id: result._id,
-                      role: result.role,
-                      mobile: result.mobile,
-                      uid: result.uid                      
-                    },
-                    config.development.secret,
-                    { expiresIn: "7 days" }
-                  );
-                let myResponse = {                
-                    "first_name": result.first_name,
-                    "last_name": result.last_name,
-                    "mobile": result.mobile,
-                    "dob": result.dob,
-                    "doctor_degree": result.doctor_degree,
-                    "doctor_certificate_img": result.doctor_certificate_img,
-                    "doctor_specialization": result.doctor_specialization,
-                    "registration_no": result.registration_no,
-                    "lat": result.lat,
-                    "long": result.long,
-                    "address": result.address,
-                    "city": result.city,
-                    "state": result.state,
-                    "country": result.country,
-                    "_id": result._id,
-                    "uid": result.uid,
-                    "created_at":result.created_at,
-                    token : `${token}`,
-                    expiresIn: 168
-                }
-                done(null, { responseCode: responseCodes.OK, result: myResponse, message: "Successfully Created." });
+            else {                
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Created." });
                 return
             }
         })

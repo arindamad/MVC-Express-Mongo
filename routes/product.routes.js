@@ -3,46 +3,43 @@ const express = require('express');
 const router = express.Router();
 const product_model_handler = require('../model_handlers/product.model_handler')
 const jsonResponse = require('../utils/json-response');
-const responseCodes = require('../utils/response-codes');
 const multer = require('multer');
 
-// Multer configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // Specify the directory where uploaded files will be stored
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    // Specify a unique filename for the uploaded file
-    cb(null, Date.now() + '-' + file.originalname);
-  }
+const path = require('path');
+
+const upload = multer({
+  storage: multer.diskStorage({
+      destination: function(req, file, cb){
+          cb(null, 'uploads/product')
+      },
+      filename: function (req, file, cb) {
+          const extension = path.extname(file.originalname);
+          cb(null, file.fieldname + '-' + Date.now() + extension);
+      },
+      
+  })
 });
 
-// Create the Multer instance
-const upload = multer({ storage: storage }).single('photo');
+router.post('/create', upload.fields([
+  { name: 'photo', maxCount: 1 },
+  { name: 'photo_gallery', maxCount: 5 },
+  { name: 'video', maxCount: 1 },
+]), function (req, res) {
+  const obj = {
+    photo: req.files['photo'],
+    photo_gallery: req.files['photo_gallery'],
+    video:req.files['video'],
+    ...req.body
+  } 
+  // console.log(obj)
+  product_model_handler.create(obj, res, function (error, result) {
+		if (error) {
+			jsonResponse(res, error.responseCode, true, [], error.message);
+			return;
+		} 
+		jsonResponse(res, result.responseCode, false, result.result, result.message);
+	});
 
-router.post('/create', function (req, res) {
-  upload(req, res, function (err) {
-    if (err) {
-      // Handle any multer-related errors
-      console.error(err);
-      return;
-    }
-
-    // Access the uploaded file from req.file
-    console.log('Uploaded file:', req.file);
-
-    // Access other form data from req.body
-    console.log('Other form data:', req.body);
-
-    product_model_handler.create(req, res, function (error, result) {
-      if (error) {
-        jsonResponse(res, error.responseCode, true, [], error.message);
-        return;
-      }
-      jsonResponse(res, result.responseCode, false, result.result, result.message);
-    });
-  });
 });
 
 
