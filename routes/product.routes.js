@@ -25,13 +25,13 @@ router.post('/create', upload.fields([
   { name: 'photo_gallery', maxCount: 5 },
   { name: 'video', maxCount: 1 },
 ]), function (req, res) {
+ 
   const obj = {
-    photo: req.files['photo'],
-    photo_gallery: req.files['photo_gallery'],
-    video:req.files['video'],
+    photo: req.files['photo'][0].destination+"/"+req.files['photo'][0].filename,
+    photo_gallery: req.files['photo_gallery'].map(i=>i.destination+"/"+i.filename),
+    video:req.files['video'].map(i=>i.destination+"/"+i.filename),
     ...req.body
   } 
-  // console.log(obj)
   product_model_handler.create(obj, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
@@ -39,9 +39,16 @@ router.post('/create', upload.fields([
 		} 
 		jsonResponse(res, result.responseCode, false, result.result, result.message);
 	});
-
 });
-
+router.post('/list', function (req, res) {
+	product_model_handler.list(req, res, function (error, result) {
+		if (error) {
+			jsonResponse(res, error.responseCode, true, [], error.message);
+			return;
+		} 
+		jsonResponse(res, result.responseCode, false, result.result, result.message);
+	});
+})
 
 
 router.post('/image-upload', function (req, res) {

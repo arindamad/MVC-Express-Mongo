@@ -20,33 +20,15 @@ const create = async (req, res, done) => {
         }
         const obj={
             product_id: uniqueId,
-            product_name: req.product_name,
-            sku:req.sku,
-            product_name: req.product_name,
-            short_description:req.short_description,
-            long_description:req.long_description,
-            brand:req.category,
-            brand:req.category,
-            photo:req.photo[0].path,
-            video:req.video[0].path,
-            photo_gallery:req.video.map((i)=>i.path),
-
-
-
-
-
-            
-
-        }
-        console.log(obj)
-        
-        Query.Create('Product', obj, (error, result) => {
+            ...req   
+        }        
+        Query.Create('Product', obj, (error, result) => { 
             
             if (error) {
-                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create your account." }, null);
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
             }
             else {                
-                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Created." });
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Added Product." });
                 return
             }
         })
@@ -59,9 +41,8 @@ const create = async (req, res, done) => {
 
 }
 
-/**
- * @DESC Check Role Middleware
- */
+
+
 const validatePhone = async mobile => {
 let user = await User.findOne({ mobile });
 return user ? false : true;
@@ -70,91 +51,7 @@ return user ? false : true;
 
 
 
-const login = async (req, res, done) => {
-    if(!req.mobile){
-        done({ responseCode: responseCodes.Unauthorized, result: {}, message: "Please add a mobile no." }, null);
-        return;
-    }
-    if(!req.password){
-        done({ responseCode: responseCodes.Unauthorized, result: {}, message: "Password not found." }, null);
-        return;
-    }
 
-    Query.FindOne('User', {mobile: req.mobile, role: { $in: [ config.role.doctor.title, config.role.patient.title ] } }, async (error, result)  => {
-        if (error) {
-            done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
-            return;
-        } 
-        if(!result){
-            done({ responseCode: responseCodes.ResourceNotFound, result: [], message: "User not found." }, null);
-            return;
-        }
-
-        const isMatch = await comparePassword(req.password,  result.password);
-       
-
-        if(!isMatch){
-           return done({responseCode: responseCodes.Invalid, result: {}, message: "Invalid Password." },null);
-        }
-
-        const token = jwt.sign({ userId: result._id }, config.development.secret, {
-            expiresIn: '168h',
-          });
-        
-        let obj= {};
-        if(result.role===config.role.doctor.title){
-            obj = {
-                "first_name": result.first_name,
-                "last_name": result.last_name,
-                "mobile": result.mobile,
-                "dob": result.dob,
-                "doctor_degree": result.doctor_degree,
-                "doctor_certificate_img": result.doctor_certificate_img,
-                "doctor_specialization": result.doctor_specialization,
-                "registration_no": result.registration_no,
-                "lat": result.lat,
-                "long": result.long,
-                "address": result.address,
-                "city": result.city,
-                "state": result.state,
-                "country": result.country,
-                "_id": result._id,
-                "uid": result.uid,
-                "created_at":result.created_at,
-                token : `${token}`,
-                expiresIn: 168
-            }
-        }else{
-            obj = {
-                first_name: result.first_name,
-                last_name: result.last_name,
-                uid: result.uid,
-                _id: result._id,
-                dob:result.dob,
-                weight:result.weight,
-                height:result.height,
-                bloodGroup:result.bloodGroup,
-                email: result.email,
-                photo:result.photo,
-                lat:result.lat,
-                long:result.long,
-                zip:result.zip,
-                address:result.address,
-                city:result.city,
-                state:result.state,
-                country:result.country,
-                role:result.role,
-                token : token,
-                expiresIn: 168
-            }
-        }
-        
-        done(null, {error:true, responseCode: responseCodes.OK, result: obj, message: "Successfully logged in." });
-             
-        return
-        
-    })
-};
 
 const restPassword = async (req, res, done) => {
     if(!req.new_password){
@@ -212,12 +109,22 @@ const comparePassword = async (oldPassword, newPassword) => {
 
 
 const list = async (req, res, done) => {
-    let result = await User.find({ role:config.role.doctor.title}, config.role.doctor.fields);
-    if(result){
-        done(null, { responseCode: responseCodes.OK, result: result, message: result.length +" doctor(s) found" });
-    }else{
-        done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Error" });
+    try {                 
+        Query.Find('Product', {}, (error, result) => {             
+            if (error) {
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
+            }
+            else {                
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Added Product." });
+                return
+            }
+        })
+    
     }
+    catch (error) {
+
+    }
+    
 }
 
 const listbyclinic = async (req, res, done) => {
@@ -465,5 +372,5 @@ function getImageNameFromURL(URL) {
 }
 
 module.exports = {
-    create,  search, image_upload, list, login, restPassword, listbyclinic, filter
+    create,  search, image_upload, list, restPassword, listbyclinic, filter
 }

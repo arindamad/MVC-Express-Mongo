@@ -44,7 +44,7 @@ app.use('/api/product/', productRoutes);
 // Serve static files from the build folder
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('uploads')); 
 
 
 // Catch-all route: send all requests to the root route

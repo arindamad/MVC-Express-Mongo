@@ -31,8 +31,7 @@ const create = async (req, res,  done) => {
     }
 }
 
-const list = async (req, res, done) => {
-    // const cateogry = Category.find( { a : { $exists : false } } );
+const list = async (req, res, done) => {  
     
     Query.Find('Category', { parent : { $exists : false } }  , {},  (error, result) => {
         if (error) {
