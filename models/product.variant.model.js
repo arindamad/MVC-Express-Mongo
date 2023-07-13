@@ -18,6 +18,10 @@ const VariantSchema = new Schema({
     type: Number,
     default: 0
   },
+  qty: {
+    type: Number,
+    default: 0
+  },
   created_at: {
     type: Date,
     default: Date.now
