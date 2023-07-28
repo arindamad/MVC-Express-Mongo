@@ -39,6 +39,12 @@ let Product_Schema = new Schema({
   category:{
     type: mongoose.Types.ObjectId,
   }, 
+  specification: [
+    {
+      sProp:Array,
+      sValue:Array,
+    }
+  ],
   variants: [mongoose.Types.ObjectId],
   created_at: {
     type: Date,
