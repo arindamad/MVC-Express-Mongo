@@ -25,14 +25,27 @@ router.post('/create', upload.fields([
   { name: 'photo_gallery', maxCount: 5 },
   { name: 'video', maxCount: 1 },
 ]), function (req, res) {
- 
-  const obj = {
-    photo: req.files['photo'][0].destination+"/"+req.files['photo'][0].filename,
-    photo_gallery: req.files['photo_gallery'].map(i=>i.destination+"/"+i.filename),
-    video:req.files['video'].map(i=>i.destination+"/"+i.filename),
-    ...req.body
-  } 
-  product_model_handler.create(obj, res, function (error, result) {
+	// Check if the 'photo' field is uploaded
+	let photoPath = null;
+	if (req.files['photo'] && req.files['photo'].length > 0) {
+		photoPath = req.files['photo'][0].destination + "/" + req.files['photo'][0].filename;
+	}
+	let photoGalleryPaths = [];
+	if (req.files['photo_gallery'] && req.files['photo_gallery'].length > 0) {
+		photoGalleryPaths = req.files['photo_gallery'].map(i => i.destination + "/" + i.filename);
+	}
+	let videoPaths = [];
+	if (req.files['video'] && req.files['video'].length > 0) {
+		videoPaths = req.files['video'].map(i => i.destination + "/" + i.filename);
+	}
+	const obj = {
+	photo: photoPath,
+	photo_gallery: photoGalleryPaths,
+	video: videoPaths,
+	...req.body
+	};
+
+	product_model_handler.create(obj, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
 			return;
@@ -40,6 +53,7 @@ router.post('/create', upload.fields([
 		jsonResponse(res, result.responseCode, false, result.result, result.message);
 	});
 });
+
 router.post('/list', function (req, res) {
 	product_model_handler.list(req, res, function (error, result) {
 		if (error) {

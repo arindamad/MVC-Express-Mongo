@@ -24,7 +24,8 @@ const create = async (req, res, done) => {
         }        
         Query.Create('Product', obj, (error, result) => { 
             
-            if (error) {
+            if (error) { 
+                console.log(error)
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
             }
             else {                
