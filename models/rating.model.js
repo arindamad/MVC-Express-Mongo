@@ -44,5 +44,5 @@ let Admin_Schema = new Schema({
 });
 
 
-const Admin = mongoose.model('Admin', Admin_Schema);
+const Admin = mongoose.model('Rating', Admin_Schema);
 module.exports = Admin;

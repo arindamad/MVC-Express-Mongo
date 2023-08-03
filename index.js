@@ -11,7 +11,8 @@ const User = require('./models/user.model');
 const Brands = require('./models/brands.model');
 const Category = require('./models/category.model');
 const Product = require('./models/product.model');
-const Variant = require('./models/product.variant.model');
+const Image = require('./models/images.model');
+
 const path = require('path');
 var CronJob = require('cron').CronJob;
 const mongoose = require('mongoose');
@@ -41,10 +42,15 @@ app.use('/api/category/', categoryRoutes);
 const productRoutes = require('./routes/product.routes');
 app.use('/api/product/', productRoutes);
 
+
+const imagesRoutes = require('./routes/image.routes');
+app.use('/api/images/', imagesRoutes);
+
 // Serve static files from the build folder
 app.use(express.static(path.join(__dirname, 'build')));
-
 app.use('/uploads', express.static('uploads')); 
+
+
 
 
 // Catch-all route: send all requests to the root route

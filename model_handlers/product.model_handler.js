@@ -22,8 +22,8 @@ const create = async (req, res, done) => {
             product_id: uniqueId,
             ...req   
         }        
-        Query.Create('Product', obj, (error, result) => { 
-            
+        console.log(obj)
+        Query.Create('Product', obj, (error, result) => {             
             if (error) { 
                 console.log(error)
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);

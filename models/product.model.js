@@ -24,14 +24,21 @@ let Product_Schema = new Schema({
     type: String,
     default: "",
   },
-  photo:{
+  application: {
     type: String,
+    default: "",
   },
-  photo_gallery:{
-    type: Array,
+  brochure: {
+    type: mongoose.Types.ObjectId,
+    ref:'images'
   },
+  photo:{
+    type: mongoose.Types.ObjectId,
+    ref:'images'
+  },
+  photo_gallery:[mongoose.Types.ObjectId],
   video:{
-    type: Array,
+    type: mongoose.Types.ObjectId,
   },
   brand:{
     type: mongoose.Types.ObjectId,
@@ -39,18 +46,18 @@ let Product_Schema = new Schema({
   category:{
     type: mongoose.Types.ObjectId,
   }, 
+  relatedProducts:[mongoose.Types.ObjectId],
   specification: [
     {
-      sProp:Array,
-      sValue:Array,
+      sProp:String,
+      sValue:String,
     }
   ],
-  variants: [mongoose.Types.ObjectId],
   created_at: {
     type: Date,
     default: Date.now
   },
-  updated_at: {
+  updated_at: { 
     type: Date,
     default: Date.now
   },

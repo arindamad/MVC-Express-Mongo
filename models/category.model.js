@@ -6,7 +6,8 @@ const categorySchema = new mongoose.Schema({
     required: true,
   },
   image:{ 
-    type: String,
+    type: mongoose.Types.ObjectId,
+    ref: "Image"
   },
   parent:{
     type: mongoose.Types.ObjectId,

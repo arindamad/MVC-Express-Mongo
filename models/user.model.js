@@ -21,8 +21,7 @@ let User_Schema = new Schema({
     default: "",
   },
   photo:{
-    type: String,
-    default: null,
+    type: mongoose.Types.ObjectId,
   },
   role:{
     type: String,

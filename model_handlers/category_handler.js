@@ -12,7 +12,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 
-const create = async (req, res,  done) => {  
+const create = async (req, res,  done) => { 
     try {   
         if(!req.name){
             done({ responseCode: responseCodes.Conflict, result: [], message: "Name is required." },null);
