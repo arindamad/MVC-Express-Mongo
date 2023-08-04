@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose');
+const Product = require("../models/product.model");
 
 
 const create = async (req, res, done) => {   
@@ -43,84 +44,16 @@ const create = async (req, res, done) => {
 }
 
 
-
-const validatePhone = async mobile => {
-let user = await User.findOne({ mobile });
-return user ? false : true;
-};
-
-
-
-
-
-
-const restPassword = async (req, res, done) => {
-    if(!req.new_password){
-        done({ responseCode: responseCodes.Unauthorized, result: {}, message: "Please enter new password." }, null);
-        return;
-    }
-    if(!req.password){
-        done({ responseCode: responseCodes.Unauthorized, result: {}, message: "Please enter password." }, null);
-        return;
-    }
-
-    Query.FindOne('User', {_id: req._id, role: config.role.doctor.title }, async (error, result)  => {
-        if (error) {
-            done({ responseCode: responseCodes.Invalid, result: [], message: "Invalid try." }, null);
-
-        }
-
-        const isMatch = await comparePassword(req.password,  result.password);
-       
-       const hashedPassword = await bcrypt.hash(req.new_password, 12);
-    //    console.log(req._id)
-
-        if(!isMatch){
-           // Update the user's document in the database with the new hashed password
-            User.findByIdAndUpdate(req._id, { password: hashedPassword, updated_at: new Date() }, (err, updatedUser) => {
-                // console.log(err, updatedUser)
-                if (err) {                
-                    done({ responseCode: responseCodes.Invalid, result: [], message: "Unable to update." }, null);
-
-                } else {
-                // handle success
-                done(null, { responseCode: responseCodes.OK, result: updatedUser, message: "Successfully password updated." });
-
-                }
-            });
-        }
-        
-    })
-};
-
-
-
-
-
-
-const comparePassword = async (oldPassword, newPassword) => {
-  try {
-    const isMatch = await bcrypt.compare(oldPassword, newPassword);
-    return isMatch;
-  } catch (err) {
-    console.error(err);
-    return false;
-  }
-};
-
-
 const list = async (req, res, done) => {
-    try {                 
-        Query.Find('Product', {}, (error, result) => {             
-            if (error) {
-                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
-            }
-            else {                
-                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Added Product." });
-                return
-            }
-        })
-    
+    try {   
+        const products = await Product.find({}).populate('photo').exec();
+        if (!products) {
+            done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
+        }
+        else {                
+            done(null, { responseCode: responseCodes.OK, result: products, message: "Successfully Added Product." });
+            return
+        }
     }
     catch (error) {
 
@@ -373,5 +306,5 @@ function getImageNameFromURL(URL) {
 }
 
 module.exports = {
-    create,  search, image_upload, list, restPassword, listbyclinic, filter
+    create,  search, image_upload, list, listbyclinic, filter
 }

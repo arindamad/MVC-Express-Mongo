@@ -49,6 +49,7 @@ router.post('/add', upload.fields([
 		} 
 		jsonResponse(res, result.responseCode, false, result.result, result.message);
 	});
+	
 });
 
 router.post('/list', function (req, res) {

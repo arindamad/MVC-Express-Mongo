@@ -30,11 +30,11 @@ let Product_Schema = new Schema({
   },
   brochure: {
     type: mongoose.Types.ObjectId,
-    ref:'images'
+    ref:'Image'
   },
   photo:{
     type: mongoose.Types.ObjectId,
-    ref:'images'
+    ref:'Image'
   },
   photo_gallery:[mongoose.Types.ObjectId],
   video:{
@@ -42,9 +42,11 @@ let Product_Schema = new Schema({
   },
   brand:{
     type: mongoose.Types.ObjectId,
+    ref:'Brand'
   },
   category:{
     type: mongoose.Types.ObjectId,
+    ref:'Category'
   }, 
   relatedProducts:[mongoose.Types.ObjectId],
   specification: [

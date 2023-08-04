@@ -20,7 +20,6 @@ const create = async (req, res, done) => {
             });
             return;
         }
-        req.status = 1;
         req.short_id = uniqueId;
 
         Query.Create('Brand', req, (error, result) => {
