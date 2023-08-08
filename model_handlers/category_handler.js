@@ -18,7 +18,7 @@ const create = async (req, res,  done) => {
             done({ responseCode: responseCodes.Conflict, result: [], message: "Name is required." },null);
             return;
         }
-        Query.Create('Category', req, (error, result) => { 
+        Query.Create('Category', req, (error, result) => {
             if(error){
                 done({ responseCode: responseCodes.Conflict, result: [], message: "Error code:"+error },null);
             }else{
@@ -33,21 +33,18 @@ const create = async (req, res,  done) => {
 
 const list = async (req, res, done) => {  
     
-    Query.Find('Category', { parent : { $exists : false } }  , {},  (error, result) => {
+    Query.Find('Category', { $or: [{ parent: { $exists: false } }, { parent: null }]}, {}, (error, result) => {
         if (error) {
-            done({ responseCode: responseCodes.Unauthorized, result: [], message: "Error" }, null);
-
+          done({ responseCode: responseCodes.Unauthorized, result: [], message: "Error" }, null);
+        } else {
+          done(null, { responseCode: responseCodes.OK, result: result, message: "Success" });
+          return;
         }
-        else {
-            done(null, { responseCode: responseCodes.OK, result: result, message: "Success" });
-            return
-        }
-    })
+      });
 }
 
 const SubCatlist = async (req, res, done) => {
-    // const cateogry = Category.find( { a : { $exists : false } } );
-    
+    // const cateogry = Category.find( { a : { $exists : false } } );    
     Query.Find('Category', { parent : req.categoryId }  , {},  (error, result) => {
         if (error) {
             done({ responseCode: responseCodes.Unauthorized, result: [], message: "Error" }, null);

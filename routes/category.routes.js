@@ -4,21 +4,6 @@ const router = express.Router();
 const category_model_handler = require('../model_handlers/category_handler');
 const jsonResponse = require('../utils/json-response');
 const responseCodes = require('../utils/response-codes');
-// const multer = require('multer');
-// const path = require('path');
-// const upload = multer({
-// 	storage: multer.diskStorage({
-// 		destination: function(req, file, cb){
-// 			cb(null, 'uploads/product')
-// 		},
-// 		filename: function (req, file, cb) {
-// 			const extension = path.extname(file.originalname);
-// 			cb(null, file.fieldname + '-' + Date.now() + extension);
-// 		},
-		
-// 	})
-//   });
-
 router.post('/create', function (req, res) {
 	category_model_handler.create(req.body, res, function (error, result) {
 		if (error) {

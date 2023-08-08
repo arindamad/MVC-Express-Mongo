@@ -1,6 +1,4 @@
 'use strict';
-
-
 const express = require('express');
 const router = express.Router();
 const brands_model_handler = require('../model_handlers/brands.model_handler')
