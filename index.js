@@ -12,6 +12,7 @@ const Brands = require('./models/brands.model');
 const Category = require('./models/category.model');
 const Product = require('./models/product.model');
 const Image = require('./models/images.model');
+const BrandCategory = require('./models/brands_category.model');
 
 const path = require('path');
 var CronJob = require('cron').CronJob;
@@ -33,6 +34,9 @@ app.use(cookieParser());
 const adminRoutes = require('./routes/admin.routes');
 app.use('/api/admin/', adminRoutes);
 
+const userRoutes = require('./routes/user.routes');
+app.use('/api/user/', userRoutes);
+
 const brandRoutes = require('./routes/brands.routes');
 app.use('/api/brand/', brandRoutes);
 
@@ -45,6 +49,12 @@ app.use('/api/product/', productRoutes);
 
 const imagesRoutes = require('./routes/image.routes');
 app.use('/api/images/', imagesRoutes);
+
+const brandsCategoryRoutes = require('./routes/brands.category.routes');
+app.use('/api/brand-category/', brandsCategoryRoutes);
+
+const enquireRoutes = require('./routes/enquire.routes');
+app.use('/api/enquire/', enquireRoutes);
 
 // Serve static files from the build folder
 app.use(express.static(path.join(__dirname, 'build')));

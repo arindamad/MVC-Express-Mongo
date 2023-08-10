@@ -13,9 +13,13 @@ let Brand_Schema = new Schema({
     type: String,
     default: ''
   }, 
+  brand_category: {
+    type: mongoose.Types.ObjectId,
+    required: true,   
+    ref:"BrandCategory"
+  }, 
   image: {
     type: mongoose.Types.ObjectId,
-    default: ''
   },
   status: {
     type: Number,

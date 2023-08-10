@@ -4,12 +4,19 @@ const Schema = mongoose.Schema;
 
 // Rating and review schema
 let User_Schema = new Schema({
+  enquire_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
   product_id: {
     type: mongoose.Types.ObjectId,
+    ref:'Product',
     required: true    
   },
   user_id: {
-    type: mongoose.Types.ObjectId,       
+    type: mongoose.Types.ObjectId,  
+    ref:'User',     
   },
   qty: {
     type: Number,
@@ -33,5 +40,5 @@ let User_Schema = new Schema({
   }
 });
 
-const User = mongoose.model('User', User_Schema);
+const User = mongoose.model('Enquiry', User_Schema);
 module.exports = User;

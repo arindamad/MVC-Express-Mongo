@@ -20,6 +20,6 @@ let  Brand_Category_Schema = new Schema({
   versionKey: false
 });
 
-const Slot = mongoose.model('Brand', Brand_Category_Schema);
+const Slot = mongoose.model('BrandCategory', Brand_Category_Schema);
 
 module.exports = Slot;
