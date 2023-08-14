@@ -36,7 +36,10 @@ let Product_Schema = new Schema({
     type: mongoose.Types.ObjectId,
     ref:'Image'
   },
-  photo_gallery:[mongoose.Types.ObjectId],
+  photo_gallery:[{
+    type: mongoose.Types.ObjectId,
+    ref:'Image'
+  }],
   video:{
     type: mongoose.Types.ObjectId,
   },

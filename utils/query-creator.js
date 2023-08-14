@@ -89,8 +89,9 @@ module.exports = {
     },
 
     Delete: async (Dbconnection, credentials, callback) => {
+        console.log(credentials);
         const dbCollection = mongoose.model(Dbconnection);
-        dbCollection.deleteOne({_id:credentials}, function(error, data){
+        dbCollection.deleteOne(credentials, function(error, data){
             if (error) {
                 callback(error, null); return;
             }

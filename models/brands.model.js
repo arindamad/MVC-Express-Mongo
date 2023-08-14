@@ -20,6 +20,10 @@ let Brand_Schema = new Schema({
   }, 
   image: {
     type: mongoose.Types.ObjectId,
+    ref:"Image"
+  },
+  url: {
+    type:String
   },
   status: {
     type: Number,

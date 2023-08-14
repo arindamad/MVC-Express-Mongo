@@ -56,56 +56,26 @@ const list = async (req, res, done) => {
         }
     }
     catch (error) {
-
+        done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
     }
     
 }
 
-const listbyclinic = async (req, res, done) => {
-    const result = await Slot.find({})
-    .populate({
-        path: 'doctor',
-        select: 'first_name last_name doctor_specialization photo mobile dob doctor_degree registration_no uid bio',
-        model: 'User'
-      })
-  .populate({ 
-    path: 'clinic',
-    select: 'clinic_name address city state country lat long',
-    model: 'User'
-  })
-  .select('first_name last_name doctor_degree doctor_certificate_img doctor_specialization registration_no est_date')
-  .lean();
-
-  let doctors = result.map(e=>{
-    if(!e.doctor){
-        return false;
+const getProducts = async (req, res, done) => {
+    try {   
+        const products = await Product.find({status:1}).populate('photo').populate('brand').exec();
+        if (!products) {
+            done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
+        }
+        else {                
+            done(null, { responseCode: responseCodes.OK, result: products, message: "Successfully Added Product." });
+            return
+        }
     }
-    if(!e.clinic){
-        return false;
-    }
-    return {
-        _id: e.doctor._id,
-        first_name: e.doctor.first_name,
-        last_name: e.doctor.last_name,
-        doctor_specialization: e.doctor.doctor_specialization,
-        mobile: e.doctor.mobile,
-        dob: e.doctor.dob,
-        doctor_degree: e.doctor.doctor_degree,
-        registration_no: e.doctor.registration_no,
-        uid: e.doctor.uid,
-        bio: e.doctor.bio,             
-        clinic: e.clinic,       
-
+    catch (error) {
+        done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
     }
     
-    
-  })
-    
-    if(doctors){
-        done(null, { responseCode: responseCodes.OK, result: doctors, message: doctors.length +" doctor(s) found" });
-    }else{
-        done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Error" });
-    }
 }
 
 const search = async (req, res, done) => {
@@ -138,15 +108,6 @@ const search = async (req, res, done) => {
 
 const filter = async (req, res, done) => {
     console.log(req);
-    // let ObjectId = mongoose.Types.ObjectId;
-    // if(ObjectId.isValid(req.filter_val)){
-        
-    // }else{
-    //     done({ responseCode: responseCodes.Invalid, result: err, message: "Object Id is not valid."}, null);
-    //     return;
-    // }
-    
-
     if(req.filterby==="clinic"){
         Slot.aggregate([
             { $match: { clinic: mongoose.Types.ObjectId(req.filter_val) } },
@@ -201,110 +162,43 @@ const filter = async (req, res, done) => {
     
 }
 
+const Delete = async (req, res, done) => {
+    Query.Delete('Product', req, (error, result) => {
+        if (error)
+            done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Unable to delete data." });
 
-
-const image_upload = async (req, res, done) => {
-
-    console.log(req.body._id)
-    var ObjectId = require('mongodb').ObjectID;
-    let bucketName;
-    let fileName;
-    let dbName;
-    if (req.body.type == "client") {
-        bucketName = config[process.env.NODE_ENV].AWS_CLINETS_BUCKET;
-        dbName = 'Clients'
-        Query.Find('Clients', { "_id": ObjectId(req.body._id) }, (error, result) => {
-
-            if (error) {
-                done(null, { responseCode: responseCodes.Invalid, result: [], message: "Failed: No such client " });
-                return;
-
-            }
-            else {
-                console.log(result[0].photo)
-                fileName = result[0].photo
-            }
-        })
-
-
-    } else {
-        bucketName = config[process.env.NODE_ENV].AWS_USERS_BUCKET;
-        dbName = 'User'
-        Query.Find('User', { "_id": Object(req.body._id) }, (error, result) => {
-
-            if (error) {
-                done(null, { responseCode: responseCodes.Invalid, result: [], message: "Failed: No such user " });
-                return;
-
-            }
-            else {
-                console.log(result[0].photo)
-
-                fileName = result[0].photo
-            }
-        })
-    }
-
-    console.log(bucketName)
-
-    let fileType = req.files.photo.name.split('.').pop();
-    req.files.photo['file_name'] = req.files.photo.name + Date.now() + '.' + fileType;
-
-
-    s3Handler.upload(req.files.photo, bucketName, fileType, (error, imageData) => {
-        if (error) {
-            done(null, { responseCode: responseCodes.Invalid, result: [], message: "Failed: Try again Later" });
-            return;
-        }
         else {
-
-            if (fileName != null) {
-                s3Handler.deleteFile(fileName, bucketName, (err, data) => {
-
-                    if (err) console.log(err)
-
-                    else {
-
-                        console.log(data)
-
-                    }
-                })
-            }
-            let finalimagename = getImageNameFromURL(imageData.Location)
-            console.log(finalimagename)
-
-            Query.Update(dbName, { "photo": finalimagename }, { "_id": req.body._id }, (error, result) => {
-                if (error) {
-                    done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Error" });
-
-                }
-                else {
-                    done(null, { responseCode: responseCodes.OK, result: finalimagename, message: "Success" });
-
-                    return
-                }
-            });
-
-
-            // done(null, { responseCode: responseCodes.OK, result: finalimagename, message: "Success" });
-            // return
+            done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully deleted data." });
+            return
         }
+    });    
+};
 
 
 
-
-    });
-}
-
-function getImageNameFromURL(URL) {
-    if (URL) {
-        var mainImageUploadURL = URL; //uploadPhoto = AWS return object 
-        var normalImageUploadURL = mainImageUploadURL.lastIndexOf('/');
-        var finalImageURL = mainImageUploadURL.substring(normalImageUploadURL + 1);
-        return finalImageURL;
+const Details = async (req, res, done) => {
+    try {   
+        const products = await Product.find(req).populate({
+            path: 'photo category brand photo_gallery'            
+          }).exec(); 
+                 
+        if (!products) {
+            done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
+        }
+        else {                
+            done(null, { responseCode: responseCodes.OK, result: products, message: "Successfully Added Product." });
+            return
+        }
     }
+    catch (error) {
+        done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
+    }
+    
 }
+
+
+
 
 module.exports = {
-    create,  search, image_upload, list, listbyclinic, filter
+    create,  search, list, filter, getProducts, Delete,  Details
 }

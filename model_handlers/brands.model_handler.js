@@ -41,8 +41,8 @@ const create = async (req, res, done) => {
 
 const list = async (req, res, done) => { 
     try{
-        const result = await Brand.find().populate('brand_category').exec();
-        if (result.length===0) {
+        const result = await Brand.find().populate('brand_category').populate('image').exec();
+        if (!result) {
             done(null, {
                 responseCode: responseCodes.ResourceNotFound,
                 result: [],
