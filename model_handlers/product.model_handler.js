@@ -23,7 +23,6 @@ const create = async (req, res, done) => {
             product_id: uniqueId,
             ...req   
         }        
-        console.log(obj)
         Query.Create('Product', obj, (error, result) => {             
             if (error) { 
                 console.log(error)
@@ -178,8 +177,15 @@ const Delete = async (req, res, done) => {
 
 const Details = async (req, res, done) => {
     try {   
-        const products = await Product.find(req).populate({
-            path: 'photo category brand photo_gallery'            
+        const products = await Product.findOne(req).populate({
+            path: 'photo category brand photo_gallery'                  
+          }).populate({
+            path: 'relatedProducts',
+            select: 'product_id brand product_name',
+            populate: { 
+                path: 'brand', 
+                select: 'brand_name'
+            }
           }).exec(); 
                  
         if (!products) {

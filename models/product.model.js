@@ -51,7 +51,10 @@ let Product_Schema = new Schema({
     type: mongoose.Types.ObjectId,
     ref:'Category'
   }, 
-  relatedProducts:[mongoose.Types.ObjectId],
+  relatedProducts:[{
+    type: mongoose.Types.ObjectId,
+    ref:'Product'
+  }],
   specification: [
     {
       sProp:String,
