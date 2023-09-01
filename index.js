@@ -13,6 +13,8 @@ const Category = require('./models/category.model');
 const Product = require('./models/product.model');
 const Image = require('./models/images.model');
 const BrandCategory = require('./models/brands_category.model');
+const Pages = require('./models/pages.model');
+const content = require('./models/content.model'); 
 
 const path = require('path');
 var CronJob = require('cron').CronJob;
@@ -46,7 +48,6 @@ app.use('/api/category/', categoryRoutes);
 const productRoutes = require('./routes/product.routes');
 app.use('/api/product/', productRoutes);
 
-
 const imagesRoutes = require('./routes/image.routes');
 app.use('/api/images/', imagesRoutes);
 
@@ -55,6 +56,14 @@ app.use('/api/brand-category/', brandsCategoryRoutes);
 
 const enquireRoutes = require('./routes/enquire.routes');
 app.use('/api/enquire/', enquireRoutes);
+
+const pageRoutes = require('./routes/page.routes');
+app.use('/api/pages/', pageRoutes);
+
+const cmsRoutes = require('./routes/cms.routes');
+app.use('/api/cms/', cmsRoutes);
+
+
 
 // Serve static files from the build folder
 app.use(express.static(path.join(__dirname, 'build')));
