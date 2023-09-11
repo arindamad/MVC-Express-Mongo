@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunk_coreui_coreui_free_react_admin_template=self.webpackChunk_coreui_coreui_free_react_admin_template||[]).push([[357],{66357:function(e,r,t){t.r(r);t(72791);var n=t(80184);r.default=function(){return(0,n.jsx)(n.Fragment,{children:"Brand List Component."})}}}]);
-//# sourceMappingURL=357.6b72a679.chunk.js.map

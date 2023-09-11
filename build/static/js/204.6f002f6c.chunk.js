@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunk_coreui_coreui_free_react_admin_template=self.webpackChunk_coreui_coreui_free_react_admin_template||[]).push([[204],{54204:function(e,r,t){t.r(r);t(72791);var a=t(80184);r.default=function(){return(0,a.jsx)(a.Fragment,{children:"Category Create Component."})}}}]);
-//# sourceMappingURL=204.6f002f6c.chunk.js.map
