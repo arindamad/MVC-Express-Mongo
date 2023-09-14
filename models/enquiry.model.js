@@ -6,20 +6,21 @@ const Schema = mongoose.Schema;
 let User_Schema = new Schema({
   enquire_id: {
     type: String,
-    required: true,
-    unique: true
+    required: true,    
   },
-  product_id: {
-    type: mongoose.Types.ObjectId,
-    ref:'Product',
-    required: true    
+  name: {
+    type: String,
+    required: true,    
   },
-  user_id: {
-    type: mongoose.Types.ObjectId,  
-    ref:'User',     
+  email: {
+    type: String,  
   },
-  qty: {
-    type: Number,
+  phone: {
+    type:String, 
+    required: true     
+  },
+  subject: {
+    type: String,
     default: null,
   },  
   message: {
@@ -36,7 +37,7 @@ let User_Schema = new Schema({
   },
   status: {
     type: Number,
-    default: 0
+    default: 1
   }
 });
 

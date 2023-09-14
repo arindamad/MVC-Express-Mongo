@@ -18,6 +18,7 @@ const create = async (req, res,  done) => {
             done({ responseCode: responseCodes.Conflict, result: [], message: "Name is required." },null);
             return;
         }
+       
         Query.Create('Category', req, (error, result) => {
             if(error){
                 done({ responseCode: responseCodes.Conflict, result: [], message: "Error code:"+error },null);
@@ -32,15 +33,19 @@ const create = async (req, res,  done) => {
 }
 
 const list = async (req, res, done) => {  
-    
-    Query.Find('Category', { $or: [{ parent: { $exists: false } }, { parent: null }]}, {}, (error, result) => {
-        if (error) {
-          done({ responseCode: responseCodes.Unauthorized, result: [], message: "Error" }, null);
+    try{
+        const categories = await Category.find({ $or: [{ parent: { $exists: false } }, { parent: null }]}).populate('image').exec();
+        // console.log(categories);
+        if (!categories) {
+            done({ responseCode: responseCodes.OK, result: result, message: "No Category found." }, null);
         } else {
-          done(null, { responseCode: responseCodes.OK, result: result, message: "Success" });
-          return;
+            done(null, { responseCode: responseCodes.OK, result: categories, message: "Success" });
         }
-      });
+        return;
+    }catch(err){
+        console.error(err);
+        done({ responseCode: responseCodes.InternalServer, result: err, message: "Internal Server Error." },null);
+    }   
 }
 
 const SubCatlist = async (req, res, done) => {
