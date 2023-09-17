@@ -98,20 +98,35 @@ module.exports = {
         })
     },
 
-    Update:async(Dbconnection,setdata,condition,callback)=>{
+    UpdateOne : async (Dbconnection, setdata, condition, callback) => {
         const dbCollection = mongoose.model(Dbconnection);
+        try {
+            const result = await dbCollection.updateOne(condition, { $set: setdata });
+            callback(null, result);
+        } catch (error) {
+            callback(error, null);
+        }
+    },
 
-        dbCollection.update(
+    UpdateMany:async(Dbconnection,setdata,condition,callback)=>{        
+        const dbCollection = mongoose.model(Dbconnection);
+        dbCollection.updateMany(
             condition,
             {
-                $set: setdata
+                $set: {
+                    "section_prop.$[]": "new_section_prop_value",
+                    "section_name.$[]": "new_section_name_value",
+                    "section_value.$[]": "new_section_value"
+                 }
 
             },
             function (error, data) {
                 if (error) {
+                    console.log(error)
                     callback(error, null); return;
                 }
                 callback(null, data);
+                console.log(data)
             })
     },
 

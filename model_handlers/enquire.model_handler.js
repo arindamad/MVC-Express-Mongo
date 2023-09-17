@@ -6,22 +6,33 @@ const crypto = require('crypto');
 const Enquiry = require("../models/enquiry.model");
 const bcrypt = require("bcryptjs");
 
+const ArMail = require("../utils/mailSender")
+
 
 
 const create = async (req, res, done) => {  
     try {    
         const uniqueId = crypto.randomBytes(3).toString("hex"); 
-        req.enquire_id = uniqueId;           
+        req.enquire_id = uniqueId; 
+
+        ArMail.SendArin(req, (error, result)=>{
+            if(error){
+                console.log(error)
+            }
+        });
+
         Query.Create('Enquiry', req, (error, result) => {            
             if (error) {
                 done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Error"+error });
-
             }
             else {               
                 done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Created" });
                 return
             }
-        })
+        });
+
+          
+        
 
 
     }

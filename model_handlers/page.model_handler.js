@@ -47,10 +47,7 @@ const create = async (req, res, done) => {
                   result: result,
                   message: "Successfully Added Page.",
                 });
-              }
-              
-
-            console.log(error);
+              }             
         })
     }
     catch (error) {        

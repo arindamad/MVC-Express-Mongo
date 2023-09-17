@@ -10,54 +10,6 @@ const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose');
 const Page = require("../models/pages.model"); 
 
-
-const create = async (req, res, done) => {    
-    try {   
-        const nameS =  req.page_name; 
-        if (!req.page_name) {
-            done({ responseCode: responseCodes.Unauthorized, result: [], message: "Please add Page name." }, null);
-        }  
-        const page_slug =   nameS.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')  
-        req.page_slug = page_slug;
-        Query.Create('Page', req, (error, result) => {    
-                       
-            if (error) {
-                if (error.code === 11000) {
-                  done(
-                    {
-                      responseCode: responseCodes.Unauthorized,
-                      result: [],
-                      message: "Duplicate! Page name already exists.",
-                    },
-                    null
-                  );
-                } else {
-                  done(
-                    {
-                      responseCode: responseCodes.Unauthorized,
-                      result: [],
-                      message: "Unable to create Page.",
-                    },
-                    null
-                  );
-                }
-              } else {
-                done(null, {
-                  responseCode: responseCodes.OK,
-                  result: result,
-                  message: "Successfully Added Page.",
-                });
-              }
-              
-
-            console.log(error);
-        })
-    }
-    catch (error) {        
-        done({ responseCode: responseCodes.InternalServer, result: {error:error}, message: "Internal Server Error." }, null);
-    }
-
-}
 const createMany = async (req, res, done) => { 
     try {           
         Query.InsertMany('CMS', req, (error, result) => {              
@@ -77,7 +29,7 @@ const createMany = async (req, res, done) => {
 
 const list = async (req, res, done) => {
     try {           
-        Query.Find('CMS', {}, (error, result) => {              
+        Query.Find('CMS', req, (error, result) => {              
             if (error) { 
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
             }
@@ -89,9 +41,46 @@ const list = async (req, res, done) => {
     }
     catch (error) {
         done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
-    }
-    
+    }    
 }
+
+const update = async (req, res, done) => {     
+    try {           
+        Query.UpdateOne('CMS', req, {_id:req._id}, (error, result) => {              
+            if (error) { 
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
+            }
+            else {                
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Added Product." });
+                return
+            }
+        });
+    }
+    catch (error) {
+        done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
+    }    
+}
+
+
+const updateMany = async (req, res, done) => {
+    try {           
+        Query.UpdateMany('CMS', req, {}, (error, result) => {              
+            if (error) { 
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
+            }
+            else {                
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Added Product." });
+                return
+            }
+        });
+    }
+    catch (error) {
+        done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
+    }    
+}
+
+
+
   
 const Delete = async (req, res, done) => {
     Query.Delete('Page', req, (error, result) => {
@@ -113,5 +102,5 @@ const Delete = async (req, res, done) => {
 
 
 module.exports = {
-    create, list, Delete, createMany
+    list, Delete, createMany, updateMany, update
 }

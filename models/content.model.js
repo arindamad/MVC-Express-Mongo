@@ -7,6 +7,10 @@ let Page_Schema = new Schema({
     type: String,
     default: "",
   },
+  section_name: {
+    type: String,
+    default: "",
+  },
   section_value: {
     type: String,
     default: "",
@@ -25,7 +29,7 @@ let Page_Schema = new Schema({
   },
   status: {
     type: Number,
-    default: 0
+    default: 1
   }
 });
 

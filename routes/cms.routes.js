@@ -4,16 +4,6 @@ const router = express.Router();
 const page_model_handler = require('../model_handlers/cms.model_handler')
 const jsonResponse = require('../utils/json-response');
 
-router.post('/create', function (req, res) {
-	page_model_handler.create(req.body, res, function (error, result) {
-		if (error) {
-			jsonResponse(res, error.responseCode, true, [], error.message);
-			return;
-		} 
-		jsonResponse(res, result.responseCode, false, result.result, result.message);
-	});
-});
-
 router.post('/create-many', function (req, res) {
 	page_model_handler.createMany(req.body, res, function (error, result) {
 		if (error) {
@@ -25,7 +15,7 @@ router.post('/create-many', function (req, res) {
 });
 
 router.post('/list', function (req, res) {
-	page_model_handler.list(req, res, function (error, result) {
+	page_model_handler.list(req.body, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
 			return;
@@ -33,6 +23,25 @@ router.post('/list', function (req, res) {
 		jsonResponse(res, result.responseCode, false, result.result, result.message);
 	});
 })
+router.post('/update-one', function (req, res) { 
+	page_model_handler.update(req.body, res, function (error, result) {
+		if (error) {
+			jsonResponse(res, error.responseCode, true, [], error.message);
+			return;
+		} 
+		jsonResponse(res, result.responseCode, false, result.result, result.message);
+	});
+});
+
+router.post('/update-many', function (req, res) {
+	page_model_handler.updateMany(req.body, res, function (error, result) {
+		if (error) {
+			jsonResponse(res, error.responseCode, true, [], error.message);
+			return;
+		} 
+		jsonResponse(res, result.responseCode, false, result.result, result.message);
+	});
+});
 
 
 router.post('/image-upload', function (req, res) {
