@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { functions } = require('underscore');
 var ObjectId = require('mongodb').ObjectID;
 module.exports = {
     Find: async (Dbconnection, credentials,  test, callback) => {
@@ -21,15 +22,15 @@ module.exports = {
             callback(null, data);
         });
     },
-    Populate: async (Dbconnection, credentials, callback) => {
+    Populate: async (Dbconnection, credentials, populate, callback) => {
         const dbCollection = mongoose.model(Dbconnection);
-        dbCollection.find(credentials, function (error, data) {
+        dbCollection.find(credentials).populate(populate).exec(function (error, data) {
             if (error) {
                 callback(error, null);
                 return;
             }
             callback(null, data);
-        }).populate('doctor_id')
+        })
     },
 
 

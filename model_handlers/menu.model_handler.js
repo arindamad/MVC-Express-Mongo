@@ -29,7 +29,7 @@ const create = async (req, res, done) => {
 
 const list = async (req, res, done) => {
     try {           
-        Query.Find('Menu', req, (error, result) => {              
+        Query.Populate('Menu', req, { path: 'menu_items', select: 'page_name page_slug' }, (error, result) => {              
             if (error) { 
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to Fetch Menus." }, null);
             }
