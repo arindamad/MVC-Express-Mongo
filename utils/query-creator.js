@@ -106,6 +106,18 @@ module.exports = {
             callback(null, result);
         } catch (error) {
             callback(error, null);
+        } 
+    },
+    FindOneAndUpdate : async (Dbconnection, setdata, condition, callback) => {
+        const dbCollection = mongoose.model(Dbconnection);
+        try {
+            const result = await dbCollection.findOneAndUpdate(condition, { $set: setdata }, {
+                upsert: true, // Set upsert to true to insert if not found
+                new: true, // Return the updated document
+              });
+            callback(null, result);
+        } catch (error) {
+            callback(error, null);
         }
     },
 

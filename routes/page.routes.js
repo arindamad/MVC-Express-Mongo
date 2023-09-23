@@ -15,7 +15,17 @@ router.post('/create', function (req, res) {
 });
 
 router.post('/list', function (req, res) {
-	page_model_handler.list(req, res, function (error, result) {
+	page_model_handler.list(req.body, res, function (error, result) {
+		if (error) {
+			jsonResponse(res, error.responseCode, true, [], error.message);
+			return;
+		} 
+		jsonResponse(res, result.responseCode, false, result.result, result.message);
+	});
+})
+
+router.post('/update', function (req, res) {
+	page_model_handler.update(req.body, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
 			return;

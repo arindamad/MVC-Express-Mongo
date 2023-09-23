@@ -10,6 +10,23 @@ const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose');
 const Page = require("../models/pages.model"); 
 
+const create = async (req, res, done) => { 
+    try {           
+        Query.Create('CMS', req, (error, result) => {              
+            if (error) { 
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
+            }
+            else {                
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Added Product." });
+                return
+            }
+        });
+    }
+    catch (error) {
+        done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
+    }
+}
+
 const createMany = async (req, res, done) => { 
     try {           
         Query.InsertMany('CMS', req, (error, result) => {              
@@ -45,7 +62,7 @@ const list = async (req, res, done) => {
 }
 
 const update = async (req, res, done) => {     
-    try {           
+    try {               
         Query.UpdateOne('CMS', req, {_id:req._id}, (error, result) => {              
             if (error) { 
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
@@ -83,7 +100,7 @@ const updateMany = async (req, res, done) => {
 
   
 const Delete = async (req, res, done) => {
-    Query.Delete('Page', req, (error, result) => {
+    Query.Delete('CMS', req, (error, result) => {
         if (error)
             done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Unable to delete data." });
 
@@ -102,5 +119,5 @@ const Delete = async (req, res, done) => {
 
 
 module.exports = {
-    list, Delete, createMany, updateMany, update
+    list, Delete, createMany, updateMany, update, create
 }

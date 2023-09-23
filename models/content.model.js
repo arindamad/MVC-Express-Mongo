@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 // Rating and review schema
 let Page_Schema = new Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, default: mongoose.Types.ObjectId }, 
   section_prop: {
     type: String,
     default: "",

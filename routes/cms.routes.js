@@ -4,6 +4,16 @@ const router = express.Router();
 const page_model_handler = require('../model_handlers/cms.model_handler')
 const jsonResponse = require('../utils/json-response');
 
+router.post('/create', function (req, res) {
+	page_model_handler.create(req.body, res, function (error, result) {
+		if (error) {
+			jsonResponse(res, error.responseCode, true, [], error.message);
+			return;
+		} 
+		jsonResponse(res, result.responseCode, false, result.result, result.message);
+	});
+});
+
 router.post('/create-many', function (req, res) {
 	page_model_handler.createMany(req.body, res, function (error, result) {
 		if (error) {

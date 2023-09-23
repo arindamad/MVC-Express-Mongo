@@ -8,8 +8,28 @@ let Page_Schema = new Schema({
     default: "",
   },
   menu_items: [{
-    type: mongoose.Types.ObjectId,
-    ref:"Page"
+   name:{
+    type:String,
+   },
+   slug:{
+    type:String,
+   },
+   target:{
+    type:String,
+   },
+   items:[
+    {
+      name:{
+        type:String,
+       },
+       slug:{
+        type:String,
+       },
+       target:{
+        type:String,
+       },
+    }
+   ]
   }],
   created_at: {
     type: Date,
