@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { NUMBER } = require('sequelize');
 const Schema = mongoose.Schema;
 
 // Rating and review schema
@@ -55,12 +54,9 @@ let Product_Schema = new Schema({
     type: mongoose.Types.ObjectId,
     ref:'Product'
   }],
-  specification: [
-    {
-      sProp:String,
-      sValue:String,
-    }
-  ],
+  product_url: {
+    type: String
+  },
   created_at: {
     type: Date,
     default: Date.now
@@ -75,5 +71,5 @@ let Product_Schema = new Schema({
   }
 });
 
-const User = mongoose.model('Product', Product_Schema);
-module.exports = User;
+const Product = mongoose.model('Product', Product_Schema);
+module.exports = Product;

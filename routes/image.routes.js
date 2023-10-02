@@ -62,6 +62,16 @@ router.post('/list', function (req, res) {
 	});
 })
 
+router.post('/delete', function (req, res) {
+	image_model_handler.Delete(req, res, function (error, result) {
+		if (error) {
+			jsonResponse(res, error.responseCode, true, [], error.message);
+			return;
+		} 
+		jsonResponse(res, result.responseCode, false, result.result, result.message);
+	});
+})
+
 
 router.post('/image-upload', function (req, res) {
 	image_model_handler.image_upload(req, res, function (error, result) {

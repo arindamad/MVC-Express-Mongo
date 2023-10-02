@@ -36,7 +36,7 @@ router.post('/image-upload', function (req, res) {
 })
 
 router.post('/list-active', function (req, res) {
-	product_model_handler.getProducts(req, res, function (error, result) {
+	product_model_handler.getProducts(req.body, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
 			return;
@@ -47,6 +47,16 @@ router.post('/list-active', function (req, res) {
 
 router.post('/delete', function (req, res) {
 	product_model_handler.Delete(req.body, res, function (error, result) {
+		if (error) {
+			jsonResponse(res, error.responseCode, true, [], error.message);
+			return;
+		} 
+		jsonResponse(res, result.responseCode, false, result.result, result.message);
+	});
+})
+
+router.post('/update', function (req, res) {
+	product_model_handler.Update(req.body, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
 			return;

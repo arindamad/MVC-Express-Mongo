@@ -1,14 +1,10 @@
 const Query = require("../utils/query-creator");
 // const errors = require('../utils/dz-errors');
 const responseCodes = require('../utils/response-codes');
-const S3Handler = require('../utils/s3-handler');
-const s3Handler = new S3Handler();
 const config = require('../config/config.json')
 require('dotenv').config();
-const crypto = require('crypto');
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose');
+const Image = require('../models/images.model')
 
 
 const create = async (req, res, done) => {   
@@ -34,7 +30,7 @@ const create = async (req, res, done) => {
 
 const list = async (req, res, done) => {
     try {                 
-        Query.Find('Image', {}, (error, result) => {             
+        Query.Find('Image', req, (error, result) => {             
             if (error) {
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
             }
@@ -51,250 +47,63 @@ const list = async (req, res, done) => {
     
 }
 
-const listbyclinic = async (req, res, done) => {
-    const result = await Slot.find({})
-    .populate({
-        path: 'doctor',
-        select: 'first_name last_name doctor_specialization photo mobile dob doctor_degree registration_no uid bio',
-        model: 'User'
-      })
-  .populate({ 
-    path: 'clinic',
-    select: 'clinic_name address city state country lat long',
-    model: 'User'
-  })
-  .select('first_name last_name doctor_degree doctor_certificate_img doctor_specialization registration_no est_date')
-  .lean();
+const fs = require('fs');
 
-  let doctors = result.map(e=>{
-    if(!e.doctor){
-        return false;
-    }
-    if(!e.clinic){
-        return false;
-    }
-    return {
-        _id: e.doctor._id,
-        first_name: e.doctor.first_name,
-        last_name: e.doctor.last_name,
-        doctor_specialization: e.doctor.doctor_specialization,
-        mobile: e.doctor.mobile,
-        dob: e.doctor.dob,
-        doctor_degree: e.doctor.doctor_degree,
-        registration_no: e.doctor.registration_no,
-        uid: e.doctor.uid,
-        bio: e.doctor.bio,             
-        clinic: e.clinic,       
-
-    }
-    
-    
-  })
-    
-    if(doctors){
-        done(null, { responseCode: responseCodes.OK, result: doctors, message: doctors.length +" doctor(s) found" });
-    }else{
-        done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Error" });
-    }
-}
-
-const search = async (req, res, done) => {
-    const regex = new RegExp("^"+req.search_keyword, 'i');
-    const searchQuery = {
-        $and: [
-          { role: config.role.doctor.title },
-          {
-            $or: [
-              { first_name: regex },
-              { last_name: regex },
-              { doctor_specialization: regex }
-            ]
-          }
-        ]
-    };
-    
-    User.find(searchQuery)   
-    .exec((err, result) => {
-        if (err) {
-        // handle error
-        done({ responseCode: responseCodes.Unauthorized, result: [], message: err }, null);
-        } else {
-        // handle success
-        done(null, { responseCode: responseCodes.OK, result: result, message: (result.length>1 ? result.length +" doctors found":result.length==0?"No Doctor Found": result.length +" doctor found")});
-        }
-    });
-        
-}
-
-const filter = async (req, res, done) => {
-    console.log(req);
-    // let ObjectId = mongoose.Types.ObjectId;
-    // if(ObjectId.isValid(req.filter_val)){
-        
-    // }else{
-    //     done({ responseCode: responseCodes.Invalid, result: err, message: "Object Id is not valid."}, null);
-    //     return;
-    // }
+const Delete = async (req, res, done) => {
+  
+    // Image.findOneAndremove({ id: req.params.todoId }, function( error, doc, result) {
+       
+    //     if (err) done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
     
 
-    if(req.filterby==="clinic"){
-        Slot.aggregate([
-            { $match: { clinic: mongoose.Types.ObjectId(req.filter_val) } },
-            {
-              $group: { 
-                _id: '$doctor',
-                doctor: { $first: '$doctor' },
-                capacity: { $first: '$capacity' },
-                start_time: { $first: '$start_time' },
-                end_time: { $first: '$end_time' },
-                status: { $first: '$status' },
-              },
-            },
-            {
-              $lookup: {
-                from: 'users', // Replace with the actual collection name of the User model
-                localField: 'doctor',
-                foreignField: '_id',
-                as: 'doctor_data',
-              },
-            },
-            {
-                $unwind: '$doctor_data',
-            },
-            {
-                $replaceRoot: { newRoot: '$doctor_data' },
-            },
-            {
-                $project: {
-                    password: 0,
-                },
-            },
-            ])
-            .exec((err, slots) => {
-              if (err) {
-                // console.error(err);
-                // Handle the error
-                done({ responseCode: responseCodes.OK, result: err, message: "Successfully get doctors"}, null);
+    //     fs.access(doc.image, fs.constants.F_OK, (err) => {
+    //         if (err) {
+    //           console.error('File does not exist:', filePath);
+    //           return;
+    //         }
+          
+    //         // File exists, proceed to delete it
+    //         fs.unlink(filePath, (err) => {
+    //           if (err) {
+    //             console.error('Error deleting file:', err);
+    //           } else {
+    //             done(null, { responseCode: responseCodes.InternalServer, result: [], message: "Successfully Deleted data." });
+    //             console.log('File deleted successfully:', filePath);
+    //           }
+    //         });
+    //       });
 
+    //     res.send(doc.id);
 
-              } else {
-                // Process the slots data
-               
-                console.log(slots);
-                done(null, { responseCode: responseCodes.OK, result: slots, message: "Successfully get doctors"});
-              }
-            });
-    }else if(req.filterby==="doctor_experience" && req.filterby==="doctor_experience"){
-
-    }
-
-    
-}
-
-
-
-const image_upload = async (req, res, done) => {
-
-    console.log(req.body._id)
-    var ObjectId = require('mongodb').ObjectID;
-    let bucketName;
-    let fileName;
-    let dbName;
-    if (req.body.type == "client") {
-        bucketName = config[process.env.NODE_ENV].AWS_CLINETS_BUCKET;
-        dbName = 'Clients'
-        Query.Find('Clients', { "_id": ObjectId(req.body._id) }, (error, result) => {
-
+    // });
+      
+      
+      
+      
+      
+    try {  
+                       
+        Query.Delete('Image', req, (error, result) => {             
             if (error) {
-                done(null, { responseCode: responseCodes.Invalid, result: [], message: "Failed: No such client " });
-                return;
-
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
             }
-            else {
-                console.log(result[0].photo)
-                fileName = result[0].photo
+            else {                
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Get all Images." });
+                return
             }
-        })
-
-
-    } else {
-        bucketName = config[process.env.NODE_ENV].AWS_USERS_BUCKET;
-        dbName = 'User'
-        Query.Find('User', { "_id": Object(req.body._id) }, (error, result) => {
-
-            if (error) {
-                done(null, { responseCode: responseCodes.Invalid, result: [], message: "Failed: No such user " });
-                return;
-
-            }
-            else {
-                console.log(result[0].photo)
-
-                fileName = result[0].photo
-            }
-        })
+        });    
     }
+    catch (error) {
 
-    console.log(bucketName)
-
-    let fileType = req.files.photo.name.split('.').pop();
-    req.files.photo['file_name'] = req.files.photo.name + Date.now() + '.' + fileType;
-
-
-    s3Handler.upload(req.files.photo, bucketName, fileType, (error, imageData) => {
-        if (error) {
-            done(null, { responseCode: responseCodes.Invalid, result: [], message: "Failed: Try again Later" });
-            return;
-        }
-        else {
-
-            if (fileName != null) {
-                s3Handler.deleteFile(fileName, bucketName, (err, data) => {
-
-                    if (err) console.log(err)
-
-                    else {
-
-                        console.log(data)
-
-                    }
-                })
-            }
-            let finalimagename = getImageNameFromURL(imageData.Location)
-            console.log(finalimagename)
-
-            Query.Update(dbName, { "photo": finalimagename }, { "_id": req.body._id }, (error, result) => {
-                if (error) {
-                    done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Error" });
-
-                }
-                else {
-                    done(null, { responseCode: responseCodes.OK, result: finalimagename, message: "Success" });
-
-                    return
-                }
-            });
-
-
-            // done(null, { responseCode: responseCodes.OK, result: finalimagename, message: "Success" });
-            // return
-        }
-
-
-
-
-    });
+    }
+    
 }
 
-function getImageNameFromURL(URL) {
-    if (URL) {
-        var mainImageUploadURL = URL; //uploadPhoto = AWS return object 
-        var normalImageUploadURL = mainImageUploadURL.lastIndexOf('/');
-        var finalImageURL = mainImageUploadURL.substring(normalImageUploadURL + 1);
-        return finalImageURL;
-    }
-}
+
+
+
+
 
 module.exports = {
-    create,  search, image_upload, list,  listbyclinic, filter
+    create,  list, Delete 
 }
