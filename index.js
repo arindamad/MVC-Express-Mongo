@@ -16,6 +16,7 @@ const BrandCategory = require('./models/brands_category.model');
 const Pages = require('./models/pages.model');
 const content = require('./models/content.model'); 
 const Menu = require('./models/menu.model'); 
+const Job = require('./models/jobs.model'); 
 
 const path = require('path');
 var CronJob = require('cron').CronJob;
@@ -66,6 +67,9 @@ app.use('/api/cms/', cmsRoutes);
 
 const MenuRoutes = require('./routes/menu.routes');
 app.use('/api/menu/', MenuRoutes);
+
+const JobRoutes = require('./routes/job.routes');
+app.use('/api/job/', JobRoutes);
 
 
 

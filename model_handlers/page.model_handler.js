@@ -59,7 +59,7 @@ const create = async (req, res, done) => {
 
 const list = async (req, res, done) => {
     try {           
-        Query.Find('Page', {}, (error, result) => {              
+        Query.Find('Page', req, {}, (error, result) => {              
             if (error) { 
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
             }
@@ -73,6 +73,22 @@ const list = async (req, res, done) => {
         done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
     }
     
+}
+const update = async (req, res, done) => {     
+    try {           
+        Query.UpdateOne('Page', req, {_id:req._id}, (error, result) => {              
+            if (error) { 
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to Updated Page." }, null);
+            }
+            else {                
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Updated Page." });
+                return
+            }
+        });
+    }
+    catch (error) {
+        done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
+    }    
 }
   
 const Delete = async (req, res, done) => {
@@ -120,5 +136,5 @@ const Details = async (req, res, done) => {
 
 
 module.exports = {
-    create, list, Delete, Details
+    create, list, Delete, Details, update
 }
