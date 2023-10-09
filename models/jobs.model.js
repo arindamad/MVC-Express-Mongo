@@ -50,6 +50,9 @@ let Job_Schema = new Schema({
   vacancy:{
     type: Number,
   },  
+  apply_url:{
+    type: String,
+  },
   created_at: {
     type: Date,
     default: Date.now

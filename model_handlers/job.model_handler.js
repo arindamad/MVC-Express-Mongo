@@ -22,10 +22,10 @@ const create = async (req, res, done) => {
         Query.Create('Job', obj, (error, result) => {             
             if (error) { 
                 console.log(error)
-                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Product." }, null);
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to create Job." }, null);
             }
             else {                
-                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Added Product." });
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Added a Job." });
                 return
             }
         });
