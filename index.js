@@ -17,6 +17,7 @@ const Pages = require('./models/pages.model');
 const content = require('./models/content.model'); 
 const Menu = require('./models/menu.model'); 
 const Job = require('./models/jobs.model'); 
+const Blog = require('./models/blog.model'); 
 
 const path = require('path');
 var CronJob = require('cron').CronJob;
@@ -70,6 +71,9 @@ app.use('/api/menu/', MenuRoutes);
 
 const JobRoutes = require('./routes/job.routes');
 app.use('/api/job/', JobRoutes);
+
+const BlogRoutes = require('./routes/blog.routes');
+app.use('/api/blog/', BlogRoutes);
 
 
 
