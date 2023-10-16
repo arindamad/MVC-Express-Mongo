@@ -39,9 +39,9 @@ const create = async (req, res, done) => {
 };
 
 
-const list = async (req, res, done) => { 
+const list = async (req, res, done) => {  
     try{
-        const result = await Brand.find().populate('brand_category').populate('image').exec();
+        const result = await Brand.find(req).populate('brand_category').populate('image').populate('inner_banner').exec();
         if (!result) {
             done(null, {
                 responseCode: responseCodes.ResourceNotFound,
@@ -78,8 +78,21 @@ const Delete = async (req, res, done) => {
         }
     });    
 };
+const update = async (req, res, done) => { 
+    Query.UpdateOne('Brand', req, {_id:req._id}, (error, result) => {
+        if (error)
+            done(null, { responseCode: responseCodes.Unauthorized, result: [], message: "Unable to Update data." });
+
+        else {
+            done(null, { responseCode: responseCodes.OK, result: result, message: "Updated Brand" });
+            return
+        }
+    });    
+};
+
 module.exports = {
     create,   
     list, 
-    Delete  
+    Delete,
+    update
 };

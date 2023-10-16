@@ -1,5 +1,4 @@
 const Query = require("../utils/query-creator");
-// const errors = require('../utils/dz-errors');
 const responseCodes = require('../utils/response-codes');
 const config = require('../config/config.json')
 require('dotenv').config();
@@ -30,11 +29,11 @@ const create = async (req, res, done) => {
 
 const list = async (req, res, done) => {
     try {                 
-        Query.Find('Image', req, (error, result) => {             
+        Query.Find('Image', req, (error, result) => {          
             if (error) {
                 done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
             }
-            else {                
+            else { 
                 done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Get all Images." });
                 return
             }
@@ -49,49 +48,45 @@ const list = async (req, res, done) => {
 
 const fs = require('fs');
 
-const Delete = async (req, res, done) => {
-  
-    // Image.findOneAndremove({ id: req.params.todoId }, function( error, doc, result) {
-       
-    //     if (err) done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
-    
-
-    //     fs.access(doc.image, fs.constants.F_OK, (err) => {
-    //         if (err) {
-    //           console.error('File does not exist:', filePath);
-    //           return;
-    //         }
-          
-    //         // File exists, proceed to delete it
-    //         fs.unlink(filePath, (err) => {
-    //           if (err) {
-    //             console.error('Error deleting file:', err);
-    //           } else {
-    //             done(null, { responseCode: responseCodes.InternalServer, result: [], message: "Successfully Deleted data." });
-    //             console.log('File deleted successfully:', filePath);
-    //           }
-    //         });
-    //       });
-
-    //     res.send(doc.id);
-
-    // });
-      
-      
-      
-      
-      
-    try {  
-                       
-        Query.Delete('Image', req, (error, result) => {             
-            if (error) {
-                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to fetch data." }, null);
+const Delete = async (req, res, done) => {  
+    Image.findOneAndRemove({ id: req._id }, function(error, doc) {
+        if (error) {
+            done({ responseCode: responseCodes.InternalServer, result: [], message: "Internal Server Error." }, null);
+            return;
+        }
+        // console.log(doc)
+        fs.access(doc.image, fs.constants.F_OK, (err) => {
+            if (err) {
+              console.error('File does not exist:');
+              return;
             }
-            else {                
-                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Get all Images." });
+          
+            // File exists, proceed to delete it
+            fs.unlink(doc.image, (err) => {
+              if (err) {
+                console.error('Error deleting file:', err);
+              } else {
+                done(null, { responseCode: responseCodes.OK, result: [], message: "Successfully Deleted data." });
+                console.log('File deleted successfully:');
+              }
+            });
+        });
+    });
+};
+
+
+const update = async (req, res, done) => {
+    try {                 
+        Query.UpdateOne('Image', req, {_id:req._id} , (error, result) => {          
+            if (error) {
+                done({ responseCode: responseCodes.Unauthorized, result: [], message: "Unable to Update." }, null);
+            }
+            else { 
+                done(null, { responseCode: responseCodes.OK, result: result, message: "Successfully Updated Images." });
                 return
             }
-        });    
+        })
+    
     }
     catch (error) {
 
@@ -102,8 +97,6 @@ const Delete = async (req, res, done) => {
 
 
 
-
-
 module.exports = {
-    create,  list, Delete 
+    create,  list, Delete, update
 }

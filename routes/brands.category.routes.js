@@ -38,33 +38,8 @@ router.post('/delete', function (req, res) {
 });
 
 //----------list all users----------------//
-router.post('/list-users', function (req, res) {
-
-	brands_model_handler.list_users(req.body, res, function (error, result) {
-		if (error) {
-			jsonResponse(res, error.responseCode, true, [], error.message);
-			return;
-		} 
-		jsonResponse(res, result.responseCode, false, result.result, result.message);
-
-	});
-});
-
-
-router.post('/list-users', function (req, res) {
-	brands_model_handler.list_users(req.body, res, function (error, result) {
-		if (error) {
-			jsonResponse(res, error.responseCode, true, [], error.message);
-			return;
-		} 
-		jsonResponse(res, result.responseCode, false, result.result, result.message);
-
-	});
-});
-
-
-router.post('/image-upload', function (req, res) {
-	brands_model_handler.image_upload(req, res, function (error, result) {
+router.post('/update', function (req, res) {
+	brands_model_handler.update(req.body, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
 			return;

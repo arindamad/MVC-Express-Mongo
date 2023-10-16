@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const config = require("../config/config.json");
+const slugify = require('slugify'); 
+
 
 // Rating and review schema
 let Brand_Schema = new Schema({
@@ -8,6 +10,13 @@ let Brand_Schema = new Schema({
     type: String,
     default: '',
     required: true,   
+  },
+  brand_slug: {
+    type: String,
+    unique: true,
+    default: function() {
+      return slugify(this.brand_name);
+    },
   },
   brand_description: {
     type: String,
@@ -19,6 +28,10 @@ let Brand_Schema = new Schema({
     ref:"BrandCategory"
   }, 
   image: {
+    type: mongoose.Types.ObjectId,
+    ref:"Image"
+  },
+  inner_banner: {
     type: mongoose.Types.ObjectId,
     ref:"Image"
   },

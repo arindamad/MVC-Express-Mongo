@@ -53,7 +53,7 @@ router.post('/add', upload.fields([
 });
 
 router.post('/list', function (req, res) {
-	image_model_handler.list(req, res, function (error, result) {
+	image_model_handler.list(req.body, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
 			return;
@@ -73,8 +73,8 @@ router.post('/delete', function (req, res) {
 })
 
 
-router.post('/image-upload', function (req, res) {
-	image_model_handler.image_upload(req, res, function (error, result) {
+router.post('/update', function (req, res) {
+	image_model_handler.update(req.body, res, function (error, result) {
 		if (error) {
 			jsonResponse(res, error.responseCode, true, [], error.message);
 			return;
