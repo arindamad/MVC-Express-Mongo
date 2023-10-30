@@ -13,7 +13,7 @@ module.exports = {
     SendArin: async (contactDetails, callback) => {
         var mailOptions = {
             from: contactDetails.email,
-            to: 'arindam@dgtalists.com',
+            to: 'marketing@transconsolution.net, arindam@dgtalists.com',
             subject: 'Sending Email using Node.js',
             html: `<!DOCTYPE html>
             <html lang="en" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml">
@@ -145,7 +145,7 @@ module.exports = {
             <tr>
             <td class="pad" style="padding-left:20px;padding-top:10px;width:100%;">
             <div align="center" class="alignment" style="line-height:10px">
-            <img alt="Image" src="https://ourliveserver.com/Design/transcon-solutions/html/images/logo.png" style="display: block; height: auto; border: 0; max-width: 214px; width: 100%;" title="Image" width="214"/>
+            <img alt="Image" src="https://transconsolution.net/images/logo.png" style="display: block; height: auto; border: 0; max-width: 214px; width: 100%;" title="Image" width="214"/>
             </div>
             </td>
             </tr>
