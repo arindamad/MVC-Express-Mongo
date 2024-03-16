@@ -1,24 +1,11 @@
+// getting-started.js
 const mongoose = require('mongoose');
-const config = require('./config/config.json')
-require('dotenv').config();
+const config = require('./config/config.json');
 
-// const mongoURL = `mongodb://usetrdev:PTdFT2078xcasxcfrgm2t@localhost:27017/transconlive`;
+main().catch(err => console.log(err));
 
-if (process.env.NODE_ENV == 'production') {
-    mongoose.connect(config[process.env.NODE_ENV].database_url, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then((result) => {
-        console.log("Database connected");
-    })
-    .catch((error) => {
-        console.error("Error while connecting to the database:", error);
-    });
-} else {
-    mongoose.connect(config[process.env.NODE_ENV].database_url, { useNewUrlParser: true, useUnifiedTopology: true }).then((result) => {
-        console.log("database connected")
-    }).catch((error) => {
-        console.log("Error while connect to database",error)
-    });
+async function main() {
+  await mongoose.connect(config.development.database_url);
+  console.log('mongodb connected')
+  // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 }
-module.exports={
-    dbConnection:mongoose.connection
-} 

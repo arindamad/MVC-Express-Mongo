@@ -1,8 +1,5 @@
 const Query = require("../utils/query-creator");
-// const errors = require('../utils/dz-errors');
 const responseCodes = require('../utils/response-codes');
-const S3Handler = require('../utils/s3-handler');
-const s3Handler = new S3Handler();
 const config = require('../config/config.json')
 require('dotenv').config();
 const crypto = require('crypto');
@@ -12,18 +9,7 @@ const jwt = require("jsonwebtoken");
 
 
 const create = async (req, res,  done) => { 
-    try {               
-        const uniqueId = crypto.randomBytes(3).toString("hex").toLocaleUpperCase(); 
-        if(!req.mobile){
-            done({ responseCode: responseCodes.Conflict, result: [], message: "Phone no is required." },null);
-            return;
-        }
-        // validate the phone
-        let phoneNotRegistered = await validatePhone(req.mobile);
-        if (!phoneNotRegistered) {
-            done({ responseCode: responseCodes.Conflict, result: [], message: "Phone is already registered." },null);
-            return;
-        }
+    try {       
         if(req.email){
             let EmailNotRegistered = await validateEmail(req.email);
             if (!EmailNotRegistered) {
@@ -41,41 +27,36 @@ const create = async (req, res,  done) => {
         const password = await bcrypt.hash(req.password, 12);
         let obj = {
            ...req,
-           role:config.role.users.title,
+           role:"team-leader",
            password,
            status:1
         }
        
-        Query.Create('User', obj, (error, result) => { 
-            let token = jwt.sign(
-                { 
-                    first_name: result.first_name,
-                    last_name: result.last_name,
-                    email: result.email,                   
-                    role: result.role,
-                    mobile: result.mobile,
-                    uid: result.uid,
-                    _id: result._id,
-                    status: result.status,
-                    created_at:result.created_at
-                },
-                config.development.secret,
-                { expiresIn: "30 days" }
-                );
-            let myResponse = {
-                first_name: result.first_name,
-                last_name: result.last_name,
-                email: result.email,                   
-                role: result.role,
-                mobile: result.mobile,
-                uid: result.uid,
-                _id: result._id,
-                status: result.status,
-                created_at:result.created_at,
-                token : token,
-                expiresIn: 168
+        Query.Create('User', obj, (error, result)  => { 
+            if(error){
+                done({ responseCode: responseCodes.InternalServer, result: [], message: "Successfully Created" }, null);
+            }else{               
+                let response ={
+                    first_name:result.first_name,
+                    last_name:result.last_name, 
+                    email:result.email, 
+                    role:result.role,
+                    create_at:result.create_at,
+                    phone:result.phone
+                }
+                let token = jwt.sign(response, process.env.JWT_SECRET, { expiresIn: "30 days" });
+                response.token = token;
+
+                // const response = {
+                //     ...result,
+                //     token: token
+                // }
+                // console.log("Final Response",response)
+
+               
+                done(null, { responseCode: responseCodes.OK, result: response, message: "Successfully Created" });
             }
-            done(null, { responseCode: responseCodes.OK, result: myResponse, message: "Successfully Created" });
+           
         })
 
     }
@@ -105,15 +86,11 @@ const login = async (req, res, done) => {
             done({ responseCode: responseCodes.Unauthorized, result: {}, message: "Please enter Password." }, null);
             return;
         }
-        Query.FindOne('User', { $and:[
-            {$or: [{ email: req.user }, { phone: req.user }]},
-            {role:{$in: [config.role.users.title]}}
-        ]}, async (error, result)  => {
+        Query.FindOne('User', { email:req.email}, async (error, result)  => {
             if (error) {
                 done({ responseCode: responseCodes.InternalServer, result: {}, message: "Internal server error." }, null);
                 return;
             }
-           
             if(!result) {
                 done({ responseCode: responseCodes.Unauthorized, result: {}, message: "User not found in Database." }, null);
                 return;

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const config = require('../config/config.json');
 
 // Rating and review schema
 let User_Schema = new Schema({
@@ -14,6 +15,7 @@ let User_Schema = new Schema({
   email: {
     type: String,
     default: null,
+    required: true
   },  
   phone: {
     type: String,
@@ -21,15 +23,17 @@ let User_Schema = new Schema({
   },
   password: {
     type: String,
-    default: "",
+    default: "",   
+    required: true
   },
   photo:{
-    type: mongoose.Types.ObjectId,
+    type: String,
   },
   role:{
     type: String,
-    default: null,
-    require: true
+    default: config.role.EMPLOYEE,
+    require: true,
+    enum : [config.role.EMPLOYEE,config.role.MANAGER,config.role.TL],
   },
   created_at: {
     type: Date,

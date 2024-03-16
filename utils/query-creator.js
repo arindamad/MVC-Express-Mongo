@@ -36,13 +36,10 @@ module.exports = {
 
     Create: async (Dbconnection, credentials, callback) => {
         const dbCollection = mongoose.model(Dbconnection);
-        dbCollection.create(credentials, function (error, data) {
-            if (error) {
-                callback(error, null);
-                return;
-            }
+        dbCollection.create(credentials).then(function (data) {
+            console.log("Data form db",data);
             callback(null, data);
-        });
+        }).catch(err => callback(err, null))
     },
 
     UpdateAttendance: async (Dbconnection, credentials, callback) => {
